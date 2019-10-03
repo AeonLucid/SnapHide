@@ -2,8 +2,9 @@
 
 extern const char** environ;
 
-NSMutableArray *dyldNames = nil;
-struct mach_header **dyldHeaders;
+uint32_t dyldCount = 0;
+char **dyldNames = 0;
+struct mach_header **dyldHeaders = 0;
 
 void syncDyldArray() {
     uint32_t count = _dyld_image_count();
@@ -11,18 +12,20 @@ void syncDyldArray() {
     
     // NSLog(@"[SnapHide] There are %u images", count);
 
-    NSMutableArray *dyldNamesTmp = [NSMutableArray new];
-    struct mach_header **dyldHeadersTmp = (struct mach_header **) malloc(sizeof(struct mach_header *) * count);
+    dyldNames = (char **) calloc(count, sizeof(char **));
+    dyldHeaders = (struct mach_header **) calloc(count, sizeof(struct mach_header **));
 
     for (int i = 0; i < count; i++) {
         const char *charName = _dyld_get_image_name(i);
         if (!charName) {
             continue;
         }
+
         NSString *name = [NSString stringWithUTF8String: charName];
         if (!name) {
             continue;
         }
+
         NSString *lower = [name lowercaseString];
         if ([lower containsString:@"tweakinject"] ||
             [lower containsString:@"cephei"] ||
@@ -36,12 +39,14 @@ void syncDyldArray() {
                 // NSLog(@"[SnapHide] > Hidden %@", name);
                 continue;
             }
-        [dyldNamesTmp addObject:name];
-        dyldHeadersTmp[counter++] = (struct mach_header *) _dyld_get_image_header(i);
+
+        uint32_t idx = counter++;
+        
+        dyldNames[idx] = strdup(charName);
+        dyldHeaders[idx] = (struct mach_header *) _dyld_get_image_header(i);
     }
 
-    dyldNames = dyldNamesTmp;
-    dyldHeaders = dyldHeadersTmp;
+    dyldCount = counter;
 }
 
 void hijackEnvironment() {
@@ -105,11 +110,11 @@ void hijackEnvironment() {
 %group DetectionsDYLD
 
 %hookf(uint32_t, _dyld_image_count) {
-    return [dyldNames count];
+    return dyldCount;
 }
 
 %hookf(const char *, _dyld_get_image_name, uint32_t image_index) {
-    return [dyldNames[image_index] UTF8String];
+    return dyldNames[image_index];
 }
 
 %hookf(struct mach_header *, _dyld_get_image_header, uint32_t image_index) {
