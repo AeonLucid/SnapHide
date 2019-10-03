@@ -10,6 +10,7 @@ TWEAK_NAME = 0SnapHide
 0SnapHide_FILES = Tweak.xm
 0SnapHide_FILES += Utils/memory.xm
 0SnapHide_FILES += Utils/strings.xm
+0SnapHide_FILES += Utils/process.xm
 0SnapHide_FILES += Detections/dyld.xm
 0SnapHide_FILES += Detections/symbols.xm
 0SnapHide_FILES += Detections/classes.xm

@@ -53,10 +53,15 @@ const char *classes[] = {
 %group DetectionsClasses
 
 %hookf(id, objc_getClass, const char* name) {
-    for (int i = 0; i < classCount; i++) {
-        if (strstr(name, classes[i]) != 0) {
-            // NSLog(@"[SnapHide] > Denied objc_getClass of %s, was actually %p", name, %orig(name));
-            return 0;
+    int64_t link_register = 0;
+    __asm ("MOV %[output], LR" : [output] "=r" (link_register));
+
+    if (is_in_process(link_register) == 0) {
+        for (int i = 0; i < classCount; i++) {
+            if (strstr(name, classes[i]) != 0) {
+                // NSLog(@"[SnapHide] > Denied objc_getClass of %s, was actually %p", name, %orig(name));
+                return 0;
+            }
         }
     }
 

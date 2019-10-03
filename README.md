@@ -9,6 +9,13 @@ An iOS tweak to hide jailbreak and hooks from Snapchat.
 To see the research this tweak was created from, see: https://aeonlucid.com/Snapchat-detection-on-iOS/  
 It also talks about why [UnSub](https://github.com/NepetaDev/UnSub) won't be good enough for Snapchat.
 
+## Snapchat support
+
+Currently undetected with this tweak.
+
+- 10.56.1.1
+- 10.65.0.66
+
 ## Installation
 
 Add the `https://aeonlucid.com/cydia/` repository in Cydia.

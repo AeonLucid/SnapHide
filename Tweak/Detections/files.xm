@@ -51,4 +51,3 @@ void hookAccessSyscall() {
 void loadFileHooks() {
     hookAccessSyscall();
 }
-

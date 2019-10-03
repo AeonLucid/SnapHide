@@ -1,7 +1,7 @@
 Package: com.aeonlucid.snaphide
 Name: SnapHide
 Depends: mobilesubstrate
-Version: 1.0.1
+Version: 1.1.0
 Architecture: iphoneos-arm
 Description: Tweak that patches all jailbreak detections on Snapchat.
 Maintainer: AeonLucid

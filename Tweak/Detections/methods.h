@@ -1,5 +1,4 @@
-#import <sys/stat.h>
-#import <mach-o/dyld.h>
 #import <substrate.h>
+#import "../Utils/process.h"
 
 void loadMethodHooks();

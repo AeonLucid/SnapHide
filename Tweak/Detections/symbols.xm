@@ -36,28 +36,32 @@ bool dlsymReal = true;
 void *(*orig_dlsym)(void *, const char *);
 
 void *hooked_dlsym(void *handle, const char *symbol) {
-    for (int i = 0; i < symbolsHideCount; i++) {
-        if (strcmp(symbol, symbolsHide[i]) == 0) {
-            // NSLog(@"[SnapHide] > Denied dlsym of %s, was actually %p", symbol, orig_dlsym(handle, symbol));
-            dlerror();
-            return 0;
-        }
-    }
+    int64_t link_register = 0;
+    __asm ("MOV %[output], LR" : [output] "=r" (link_register));
 
-    if (strstr(symbol, "dlsym") != 0) {
-        if (dlsymReal) {
-            dlsymReal = false;
-            // NSLog(@"[SnapHide] > Replaced dlsym of %s", symbol);
-            return (void *)&hooked_dlsym;
+    if (is_in_process(link_register) == 0) {
+        for (int i = 0; i < symbolsHideCount; i++) {
+            if (strcmp(symbol, symbolsHide[i]) == 0) {
+                // NSLog(@"[SnapHide] > Denied dlsym of %s, was actually %p", symbol, orig_dlsym(handle, symbol));
+                return 0;
+            }
         }
 
-        dlsymReal = true;
-    }
+        if (strstr(symbol, "dlsym") != 0) {
+            if (dlsymReal) {
+                dlsymReal = false;
+                // NSLog(@"[SnapHide] > Replaced dlsym of %s", symbol);
+                return (void *)&hooked_dlsym;
+            }
 
-    for (int i = 0; i < symbolsFakeCount; i++) {
-        if (strcmp(symbol, symbolsFake[i]) == 0) {
-            // NSLog(@"[SnapHide] > Need to fake %s", symbol);
-            return (void *) fakePrologue;
+            dlsymReal = true;
+        }
+
+        for (int i = 0; i < symbolsFakeCount; i++) {
+            if (strcmp(symbol, symbolsFake[i]) == 0) {
+                // NSLog(@"[SnapHide] > Need to fake %s", symbol);
+                return (void *) fakePrologue;
+            }
         }
     }
 
