@@ -7,7 +7,7 @@ An iOS tweak to hide jailbreak and hooks from Snapchat.
 ## Research
 
 To see the research this tweak was created from, see: https://aeonlucid.com/Snapchat-detection-on-iOS/  
-It also talks about why [NoSub](https://github.com/NepetaDev/UnSub) won't be good enough for Snapchat.
+It also talks about why [UnSub](https://github.com/NepetaDev/UnSub) won't be good enough for Snapchat.
 
 ## Installation
 
