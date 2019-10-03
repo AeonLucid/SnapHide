@@ -1,0 +1,1 @@
+int32_t ends_with(const char *str, const char *suffix);
