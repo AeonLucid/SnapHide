@@ -16,6 +16,11 @@ Currently undetected with this tweak.
 - 10.56.1.1
 - 10.65.0.66
 
+Tweaks confirmed to be compatible and undetected using SnapHide.
+
+- Wraith 0.3
+- DzSnap 1.0.5-5
+
 ## Installation
 
 Add the `https://aeonlucid.com/cydia/` repository in Cydia.
