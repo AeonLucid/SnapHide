@@ -17,6 +17,6 @@ TWEAK_NAME = 0SnapHide
 0SnapHide_FILES += Detections/files.xm
 0SnapHide_FILES += Detections/codesign.xm
 0SnapHide_FILES += Detections/methods.xm
-0SnapHide_CFLAGS = -fobjc-arc
+0SnapHide_CFLAGS = -fobjc-arc -Wno-deprecated-declarations
 
 include $(THEOS_MAKE_PATH)/tweak.mk
