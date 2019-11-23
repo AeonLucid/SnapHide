@@ -9,7 +9,8 @@ void hookCodesignStatusCallback(uint8_t* match) {
         0x00, 0x00, 0x80, 0xD2  // MOV  X0, #0
 	};
 
-    MSHookMemory(match + 8, patch, sizeof(patch));
+    hook_memory(match + 8, patch, sizeof(patch));
+    
     // NSLog(@"[SnapHide] Hooked sys_csops at %p", match);
 }
 

@@ -31,7 +31,7 @@ void hookAccessSyscallCallback(uint8_t* match) {
 
     *(int32_t (**)(const char *))(patch + 12) = sysAccessHook;
 
-    MSHookMemory(match, patch, sizeof(patch));
+    hook_memory(match, patch, sizeof(patch));
 
     // NSLog(@"[SnapHide] Hooked sys_access at %p", match);
 }

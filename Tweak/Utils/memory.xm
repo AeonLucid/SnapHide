@@ -29,3 +29,36 @@ void scan_executable_memory(const uint8_t *target, const uint32_t target_len, vo
         }
     }
 }
+
+bool hook_memory(void *target, const void *data, size_t size) {
+    mshookmemory_t MSHookMemory_ = (mshookmemory_t) MSFindSymbol(NULL, "_MSHookMemory");
+
+    if (MSHookMemory_) {
+        MSHookMemory_(target, data, size);
+        return true;
+    } else {
+        kern_return_t err;
+        mach_port_t port = mach_task_self();
+        vm_address_t address = (vm_address_t) target;
+
+        err = vm_protect(port, address, size, false, VM_PROT_READ | VM_PROT_WRITE | VM_PROT_COPY);
+
+        if (err != KERN_SUCCESS) {
+            return false;
+        }
+
+        err = vm_write(port, address, (vm_address_t) data, size);
+
+        if (err != KERN_SUCCESS) {
+            return false;
+        }
+
+        err = vm_protect(port, address, size, false, VM_PROT_READ | VM_PROT_EXECUTE);
+
+        if (err != KERN_SUCCESS) {
+            return false;
+        }
+
+        return false;
+    }
+}

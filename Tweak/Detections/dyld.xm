@@ -110,18 +110,50 @@ void hijackEnvironment() {
 %group DetectionsDYLD
 
 %hookf(uint32_t, _dyld_image_count) {
+    int64_t link_register = 0;
+    __asm ("MOV %[output], LR" : [output] "=r" (link_register));
+
+    if (is_in_process(link_register) == -1) {
+        return %orig();
+    }
+
     return dyldCount;
 }
 
 %hookf(const char *, _dyld_get_image_name, uint32_t image_index) {
+    int64_t link_register = 0;
+    __asm ("MOV %[output], LR" : [output] "=r" (link_register));
+
+    if (is_in_process(link_register) == -1) {
+        return %orig(image_index);
+    }
+
     return dyldNames[image_index];
 }
 
 %hookf(struct mach_header *, _dyld_get_image_header, uint32_t image_index) {
+    int64_t link_register = 0;
+    __asm ("MOV %[output], LR" : [output] "=r" (link_register));
+    
+    // Need to check for this, otherwise we end up in an recursive loop
+    // because is_in_process uses dyld_get_image_header(0).
+    if (image_index != 0) {
+        if (is_in_process(link_register) == -1) {
+            return %orig(image_index);
+        }
+    }
+
     return dyldHeaders[image_index];
 }
 
-%hookf(kern_return_t, task_info, task_name_t target_task, task_flavor_t flavor, task_info_t task_info_out, mach_msg_type_number_t *task_info_outCnt) {
+%hookf(kern_return_t, task_info, task_name_t target_task, task_flavor_t flavor, task_info_t task_info_out, mach_msg_type_number_t *task_info_outCnt) {   
+    int64_t link_register = 0;
+    __asm ("MOV %[output], LR" : [output] "=r" (link_register));
+    
+    if (is_in_process(link_register) == -1) {
+        return %orig(target_task, flavor, task_info_out, task_info_outCnt);
+    }
+    
     if (flavor == TASK_DYLD_INFO) {
         kern_return_t ret = %orig(target_task, flavor, task_info_out, task_info_outCnt);
 
